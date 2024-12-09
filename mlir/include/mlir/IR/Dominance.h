@@ -88,12 +88,12 @@ public:
   bool isReachableFromEntry(Block *a) const;
 
   /// Return true if operations in the specified block are known to obey SSA
-  /// dominance requirements. False if the block is a graph region or unknown.
+  /// dominance requirements. False if its region is a graph region or unknown.
   bool hasSSADominance(Block *block) const {
     return hasSSADominance(block->getParent());
   }
-  /// Return true if operations in the specified block are known to obey SSA
-  /// dominance requirements. False if the block is a graph region or unknown.
+  /// Return true if operations in the specified region are known to obey SSA
+  /// dominance requirements. False if the region is a graph region or unknown.
   bool hasSSADominance(Region *region) const {
     return getDominanceInfo(region, /*needsDomTree=*/false).getInt();
   }

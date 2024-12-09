@@ -203,14 +203,22 @@ DominanceInfoBase<IsPostDom>::findNearestCommonDominator(Block *a,
   if (!tryGetBlocksInSameRegion(a, b))
     return nullptr;
 
-  // If the common ancestor in a common region is the same block, then return
-  // it.
-  if (a == b)
+  // If the ancestors in a common region is the same block or the common
+  // region not requires dominance, then return either of them.
+  if (a == b || !hasSSADominance(a))
     return a;
 
-  // Otherwise, there must be multiple blocks in the region, check the
-  // DomTree.
-  return getDomTree(a->getParent()).findNearestCommonDominator(a, b);
+  // Otherwise, there must be multiple blocks in the SSACFG region.
+  DomTree &domTree = getDomTree(a->getParent());
+
+  // If a or b is an unreachable block, anything dominates it, return another.
+  if (!domTree.getNode(a))
+    return b;
+  if (!domTree.getNode(b))
+    return a;
+
+  // Now, both a and b are reachable, check the DomTree.
+  return domTree.findNearestCommonDominator(a, b);
 }
 
 /// Return true if the specified block A properly dominates block B.
